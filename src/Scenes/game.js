@@ -23,16 +23,14 @@ class firstExample extends Phaser.Scene{
         this.finished = 0;
         this.throwing = false;
 
+        // Score = total balls that went in this game
+        this.score = 0;
+
         // Game Board
         this.add.rectangle(540, 750, 900, 1300, 0xe0e0e0).setStrokeStyle(12, 0x444444);
 
         // Hole
         this.add.circle(this.GoalHoop.x, this.GoalHoop.y, this.GoalHoop.r, 0x222222).setStrokeStyle(12, 0x444444);
-        this.add.circle(this.hole.x, this.hole.y, this.hole.r, 0x222222).setStrokeStyle(12, 0x444444);
-
-        this.ball = this.physics.add.image(960, 200, 'ball');
-        this.ball.setColliderWorldBounds(true);
-        this.ball.setBounce(0.7);
 
         // Hoop image on top of the hole
         this.add.image(this.GoalHoop.x, this.GoalHoop.y + 45, 'hoop').setDisplaySize(400, 400);
@@ -40,6 +38,8 @@ class firstExample extends Phaser.Scene{
         // Turns + UI
         this.turnsLeft = 10;
         this.ui = this.add.text(140, 120, '', { fontSize: '48px', color: '#222' });
+        this.scoreText = this.add.text(140, 180, '', { fontSize: '48px', color: '#222' });
+        this.turnResult = this.add.text(540, 1100, 'Click to shoot!', { fontSize: '56px', color: '#444' }).setOrigin(0.5);
         this.updateUI();
 
         this.input.on('pointerdown', () => this.throwBalls());
@@ -47,6 +47,7 @@ class firstExample extends Phaser.Scene{
 
     updateUI() {
         this.ui.setText(`Turns: ${this.turnsLeft}   Balls: ${this.ballCount}`);
+        this.scoreText.setText(`Score: ${this.score}`);
     }
 
     throwBalls() {
@@ -56,6 +57,7 @@ class firstExample extends Phaser.Scene{
         this.ballsThrown = this.ballCount;
         this.ballsMade = 0;
         this.finished = 0;
+        this.turnResult.setText('');
         this.updateUI();
 
         for (let i = 0; i < this.ballsThrown; i++) {
@@ -81,6 +83,8 @@ class firstExample extends Phaser.Scene{
         const made = Phaser.Math.Distance.Between(b.x, b.y, this.GoalHoop.x, this.GoalHoop.y) < this.GoalHoop.r;
         if (made) {
             this.ballsMade++;
+            this.score++;
+            this.updateUI();
             this.tweens.add({ targets: b, alpha: 0, duration: 200, onComplete: () => b.destroy() });
         } else {
             this.tweens.add({ targets: b, y: b.y + 300, alpha: 0, duration: 400, onComplete: () => b.destroy() });
@@ -94,10 +98,11 @@ class firstExample extends Phaser.Scene{
         this.ballCount = this.ballsMade * 2;   // every make duplicates
         this.throwing = false;
         this.updateUI();
+        this.turnResult.setText(`${this.ballsMade} of ${this.ballsThrown} went in!`);
 
         if (this.ballCount === 0 || this.turnsLeft === 0) {
-            const msg = this.ballCount ? `Final: ${this.ballCount} balls!` : 'Out of balls!';
-            this.add.text(540, 900, msg + '\nClick to restart', { fontSize: '72px', color: '#222', align: 'center' }).setOrigin(0.5);
+            const msg = this.ballCount ? 'Game over!' : 'Out of balls!';
+            this.add.text(540, 800, `${msg}\nScore: ${this.score}\nClick to restart`, { fontSize: '72px', color: '#222', align: 'center' }).setOrigin(0.5);
             this.input.once('pointerdown', () => this.scene.restart());
         }
     }
