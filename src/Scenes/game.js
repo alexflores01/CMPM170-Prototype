@@ -33,6 +33,16 @@ class firstExample extends Phaser.Scene{
         this.ball = this.physics.add.image(960, 200, 'ball');
         this.ball.setColliderWorldBounds(true);
         this.ball.setBounce(0.7);
+
+        // Hoop image on top of the hole
+        this.add.image(this.GoalHoop.x, this.GoalHoop.y + 45, 'hoop').setDisplaySize(400, 400);
+
+        // Turns + UI
+        this.turnsLeft = 10;
+        this.ui = this.add.text(140, 120, '', { fontSize: '48px', color: '#222' });
+        this.updateUI();
+
+        this.input.on('pointerdown', () => this.throwBalls());
     }
 
 }
