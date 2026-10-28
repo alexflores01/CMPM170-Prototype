@@ -27,7 +27,15 @@ class firstExample extends Phaser.Scene{
         this.add.rectangle(540, 750, 900, 1300, 0xe0e0e0).setStrokeStyle(12, 0x444444);
 
         // Hole
+<<<<<<< HEAD
         this.add.circle(this.GoalHoop.x, this.GoalHoop.y, this.GoalHoop.r, 0x222222).setStrokeStyle(12, 0x444444);
+=======
+        this.add.circle(this.hole.x, this.hole.y, this.hole.r, 0x222222).setStrokeStyle(12, 0x444444);
+
+        this.ball = this.physics.add.image(960, 200, 'ball');
+        this.ball.setColliderWorldBounds(true);
+        this.ball.setBounce(0.7);
+>>>>>>> ab0d75b (reformating)
 
         // Hoop image on top of the hole
         this.add.image(this.GoalHoop.x, this.GoalHoop.y + 45, 'hoop').setDisplaySize(400, 400);
