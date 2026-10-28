@@ -1,1 +1,1 @@
-Hello my name is Umayr this is my first commit
+Question: "How does success affect a player's ability to gain an advantage in a game where successful actions multiply?"
