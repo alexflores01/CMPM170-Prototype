@@ -16,6 +16,10 @@ class firstExample extends Phaser.Scene{
         this.spread = 70;
         this.flightTime = 700;                  // Time in ms
 
+        // Area that counts as a make: the whole visible hoop sprite (pole, backboard, ring, base),
+        // measured from the center of the hole
+        this.hitBox = { left: -80, right: 80, top: -100, bottom: 175 };
+
         // Ball Code
         this.ballCount = 1;
         this.ballsThrown = 0;
@@ -91,7 +95,9 @@ class firstExample extends Phaser.Scene{
     }
 
     landBall(b) {
-        const made = Phaser.Math.Distance.Between(b.x, b.y, this.GoalHoop.x, this.GoalHoop.y) < this.GoalHoop.r;
+        const dx = b.x - this.GoalHoop.x;
+        const dy = b.y - this.GoalHoop.y;
+        const made = dx >= this.hitBox.left && dx <= this.hitBox.right && dy >= this.hitBox.top && dy <= this.hitBox.bottom;
         if (made) {
             this.ballsMade++;
             this.score++;
