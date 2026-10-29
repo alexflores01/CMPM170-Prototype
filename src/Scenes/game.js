@@ -30,19 +30,29 @@ class firstExample extends Phaser.Scene{
         this.add.rectangle(540, 750, 900, 1300, 0xe0e0e0).setStrokeStyle(12, 0x444444);
 
         // Hole
-        this.add.circle(this.GoalHoop.x, this.GoalHoop.y, this.GoalHoop.r, 0x222222).setStrokeStyle(12, 0x444444);
+        this.hole = this.add.circle(this.GoalHoop.x, this.GoalHoop.y, this.GoalHoop.r, 0x222222).setStrokeStyle(12, 0x444444);
 
         // Hoop image on top of the hole
-        this.add.image(this.GoalHoop.x, this.GoalHoop.y + 45, 'hoop').setDisplaySize(400, 400);
+        this.hoopImg = this.add.image(this.GoalHoop.x, this.GoalHoop.y + 45, 'hoop').setDisplaySize(400, 400);
+
+        // Slide the hoop back and forth
+        this.tweens.add({
+            targets: [this.hole, this.hoopImg, this.GoalHoop],
+            x: { from: 240, to: 840 },
+            duration: 4000,
+            ease: 'Sine.easeInOut',
+            yoyo: true,
+            repeat: -1,
+        });
 
         // Turns + UI
         this.turnsLeft = 10;
         this.ui = this.add.text(140, 120, '', { fontSize: '48px', color: '#222' });
         this.scoreText = this.add.text(140, 180, '', { fontSize: '48px', color: '#222' });
-        this.turnResult = this.add.text(540, 1100, 'Click to shoot!', { fontSize: '56px', color: '#444' }).setOrigin(0.5);
+        this.turnResult = this.add.text(540, 1100, 'Click where you want to shoot!', { fontSize: '48px', color: '#444', align: 'center', wordWrap: { width: 800 } }).setOrigin(0.5);
         this.updateUI();
 
-        this.input.on('pointerdown', () => this.throwBalls());
+        this.input.on('pointerdown', (p) => this.throwBalls(p));
     }
 
     updateUI() {
@@ -50,7 +60,7 @@ class firstExample extends Phaser.Scene{
         this.scoreText.setText(`Score: ${this.score}`);
     }
 
-    throwBalls() {
+    throwBalls(p) {
         if (this.throwing || this.turnsLeft <= 0) return;
         this.throwing = true;
         this.turnsLeft--;
@@ -62,8 +72,9 @@ class firstExample extends Phaser.Scene{
 
         for (let i = 0; i < this.ballsThrown; i++) {
             const b = this.add.image(this.start.x, this.start.y, 'ball').setDisplaySize(60, 60);
-            const tx = this.GoalHoop.x + Phaser.Math.Between(-this.spread * 1.2, this.spread * 1.2);
-            const ty = this.GoalHoop.y + Phaser.Math.Between(-this.spread * 1.2, this.spread * 1.2);
+            // Aim at the click, with spray around it
+            const tx = p.x + Phaser.Math.Between(-this.spread * 1.2, this.spread * 1.2);
+            const ty = p.y + Phaser.Math.Between(-this.spread * 1.2, this.spread * 1.2);
 
             this.tweens.add({
                 targets: b,
@@ -102,7 +113,7 @@ class firstExample extends Phaser.Scene{
 
         if (this.ballCount === 0 || this.turnsLeft === 0) {
             const msg = this.ballCount ? 'Game over!' : 'Out of balls!';
-            this.add.text(540, 800, `${msg}\nScore: ${this.score}\nClick to restart`, { fontSize: '72px', color: '#222', align: 'center' }).setOrigin(0.5);
+            this.add.text(540, 800, `${msg}\nScore: ${this.score}\nClick to restart`, { fontSize: '64px', color: '#222', align: 'center', wordWrap: { width: 800 } }).setOrigin(0.5);
             this.input.once('pointerdown', () => this.scene.restart());
         }
     }
